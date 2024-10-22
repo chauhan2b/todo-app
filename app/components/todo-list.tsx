@@ -1,5 +1,6 @@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Todo } from "../models/todo";
+import { format } from "date-fns";
 
 export default function TodoList({ todos }: { todos: Todo[] }) {
   return (
@@ -11,8 +12,8 @@ export default function TodoList({ todos }: { todos: Todo[] }) {
             <label>{todo.title}</label>
           </div>
           <div>
-            <span className="px-10 py-2 text-sm text-gray-500">
-              {todo.date.toDateString()}
+            <span className="hidden md:block px-10 py-2 text-sm text-gray-500">
+              {format(todo.date, "PPP")}
             </span>
           </div>
         </div>
