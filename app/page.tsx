@@ -3,16 +3,34 @@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import TodoList from "./components/todo-list";
-import { initialTodos } from "./data/todos";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Todo } from "./models/todo";
 import { toast } from "sonner";
 import { DatePicker } from "./components/date-picker.";
 
 export default function Home() {
-  const [todos, setTodos] = useState(initialTodos);
+  const [todos, setTodos] = useState<Todo[]>([]);
   const [title, setTitle] = useState("");
   const [date, setDate] = useState<Date>();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Get todos from local storage on first run
+    const savedTodos = localStorage.getItem("todos");
+    if (savedTodos) {
+      setTodos(JSON.parse(savedTodos));
+    }
+
+    setLoading(false);
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("todos", JSON.stringify(todos));
+  }, [todos]);
+
+  function generateRandomId() {
+    return Math.random().toString(36).substring(7);
+  }
 
   function handleAddTodo() {
     if (title.trim() === "") {
@@ -26,11 +44,13 @@ export default function Home() {
     }
 
     const newTodo: Todo = {
-      id: (todos.length + 1).toString(),
+      id: generateRandomId(),
       title: title,
       date: date,
       isCompleted: false,
     };
+
+    console.log(newTodo);
 
     // Add new todo to the list
     setTodos([...todos, newTodo]);
@@ -86,11 +106,15 @@ export default function Home() {
 
       {/* List of all todo's */}
 
-      <TodoList
-        todos={todos}
-        toggleTodo={handleToggleTodo}
-        deleteTodo={handleDeleteTodo}
-      />
+      {loading ? (
+        <div className="flex justify-center items-center py-4">Loading...</div>
+      ) : (
+        <TodoList
+          todos={todos}
+          toggleTodo={handleToggleTodo}
+          deleteTodo={handleDeleteTodo}
+        />
+      )}
     </div>
   );
 }
