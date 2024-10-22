@@ -43,6 +43,28 @@ export default function Home() {
     toast.success("Todo added successfully.");
   }
 
+  function handleToggleTodo(id: string) {
+    const updatedTodos = todos.map((todo) => {
+      if (todo.id === id) {
+        return {
+          ...todo,
+          isCompleted: !todo.isCompleted,
+        };
+      }
+      return todo;
+    });
+
+    setTodos(updatedTodos);
+  }
+
+  function handleDeleteTodo(id: string) {
+    const updatedTodos = todos.filter((todo) => todo.id !== id);
+    setTodos(updatedTodos);
+
+    // show toast message
+    toast.success("Todo deleted successfully.");
+  }
+
   return (
     <div className="flex flex-col max-w-md md:max-w-2xl w-full mx-auto">
       <div className="text-2xl font-bold flex items-center justify-center mt-32">
@@ -64,7 +86,11 @@ export default function Home() {
 
       {/* List of all todo's */}
 
-      <TodoList todos={todos} />
+      <TodoList
+        todos={todos}
+        toggleTodo={handleToggleTodo}
+        deleteTodo={handleDeleteTodo}
+      />
     </div>
   );
 }

@@ -5,7 +5,7 @@ export const initialTodos: Todo[] = [
     id: "1",
     title: "Learn React",
     date: new Date(),
-    isCompleted: false,
+    isCompleted: true,
   },
   {
     id: "2",
