@@ -1,8 +1,12 @@
-import { Checkbox } from "@/components/ui/checkbox";
-import { format } from "date-fns";
-import { Button } from "@/components/ui/button";
-import { Trash2 } from "lucide-react";
-import { TodoState } from "./models/todo";
+import { TodoState } from "../models/todo";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Badge } from "@/components/ui/badge";
+import { TodoItem } from "./todo-item";
 
 interface TodoListProps {
   todos: TodoState[];
@@ -15,39 +19,72 @@ export default function TodoList({
   toggleTodo,
   deleteTodo,
 }: TodoListProps) {
+  const pendingTodos = todos.filter((todo) => !todo.isCompleted);
+  const completedTodos = todos.filter((todo) => todo.isCompleted);
+
   return (
     <>
+      {/* If todos are empty */}
+
       {todos.length === 0 && (
-        <div className="flex items-center justify-center mt-5">
+        <div className="flex items-center justify-center mt-5 text-gray-500">
           Start by adding a new todo.
         </div>
       )}
-      {todos.map((todo) => (
-        <div key={todo.id} className="flex items-center">
-          <div className="flex flex-1 items-center justify-start gap-2 px-10 py-2">
-            <Checkbox
-              checked={todo.isCompleted}
-              onCheckedChange={() => toggleTodo(todo.id)}
-            />
-            <label className={todo.isCompleted ? "line-through" : ""}>
-              {todo.title}
-            </label>
-          </div>
-          <div className="flex">
-            <span className="hidden md:block px-10 py-2 text-sm text-gray-500">
-              {format(new Date(todo.date), "PPP")}
-            </span>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => deleteTodo(todo.id)}
-              className="mr-10 text-red-500 hover:text-red-600 hover:bg-red-50"
-            >
-              <Trash2 />
-            </Button>
-          </div>
-        </div>
-      ))}
+
+      {/* Pending Todos */}
+
+      {pendingTodos.length === 0 || (
+        <Accordion type="single" collapsible className="px-6">
+          <AccordionItem value="item-1">
+            <AccordionTrigger className="text-sm text-gray-500">
+              <div className="flex items-center">
+                <Badge variant="outline" className="text-gray-500 mr-2">
+                  {pendingTodos.length}
+                </Badge>
+                Pending
+              </div>
+            </AccordionTrigger>
+            <AccordionContent>
+              {pendingTodos.map((todo) => (
+                <TodoItem
+                  todo={todo}
+                  key={todo.id}
+                  toggleTodo={toggleTodo}
+                  deleteTodo={deleteTodo}
+                />
+              ))}
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      )}
+
+      {/* Completed Todos */}
+
+      {completedTodos.length === 0 || (
+        <Accordion type="single" collapsible className="px-6">
+          <AccordionItem value="item-1">
+            <AccordionTrigger className="text-sm text-gray-500">
+              <div className="flex items-center">
+                <Badge variant="outline" className="text-gray-500 mr-2">
+                  {completedTodos.length}
+                </Badge>
+                Finished
+              </div>
+            </AccordionTrigger>
+            <AccordionContent>
+              {completedTodos.map((todo) => (
+                <TodoItem
+                  todo={todo}
+                  key={todo.id}
+                  toggleTodo={toggleTodo}
+                  deleteTodo={deleteTodo}
+                />
+              ))}
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      )}
     </>
   );
 }

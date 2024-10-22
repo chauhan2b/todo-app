@@ -1,4 +1,4 @@
-import { TodoState } from "@/app/components/models/todo";
+import { TodoState } from "@/app/models/todo";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 // initial state
