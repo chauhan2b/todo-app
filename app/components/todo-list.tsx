@@ -17,6 +17,11 @@ export default function TodoList({
 }: TodoListProps) {
   return (
     <>
+      {todos.length === 0 && (
+        <div className="flex items-center justify-center mt-5">
+          Start by adding a new todo.
+        </div>
+      )}
       {todos.map((todo) => (
         <div key={todo.id} className="flex items-center">
           <div className="flex flex-1 items-center justify-start gap-2 px-10 py-2">
