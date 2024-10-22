@@ -7,28 +7,37 @@ import { initialTodos } from "./data/todos";
 import { useState } from "react";
 import { Todo } from "./models/todo";
 import { toast } from "sonner";
+import { DatePicker } from "./components/date-picker.";
 
 export default function Home() {
   const [todos, setTodos] = useState(initialTodos);
   const [title, setTitle] = useState("");
+  const [date, setDate] = useState<Date>();
 
   function handleAddTodo() {
     if (title.trim() === "") {
+      toast.error("Please enter a title.");
+      return;
+    }
+
+    if (!date) {
+      toast.error("Please select a date.");
       return;
     }
 
     const newTodo: Todo = {
       id: (todos.length + 1).toString(),
       title: title,
-      date: new Date(),
+      date: date,
       isCompleted: false,
     };
 
     // Add new todo to the list
     setTodos([...todos, newTodo]);
 
-    // Clear the input field
+    // Clear the input field and date picker
     setTitle("");
+    setDate(undefined);
 
     // Show toast message
     toast.success("Todo added successfully.");
@@ -49,6 +58,7 @@ export default function Home() {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
+        <DatePicker date={date} setDate={setDate} />
         <Button onClick={handleAddTodo}>Add Todo</Button>
       </div>
 
