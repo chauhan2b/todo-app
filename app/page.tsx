@@ -4,33 +4,37 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import TodoList from "./components/todo-list";
 import { useEffect, useState } from "react";
-import { Todo } from "./models/todo";
 import { toast } from "sonner";
-import { DatePicker } from "./components/date-picker.";
+import { DatePicker } from "./components/date-picker";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/lib/store";
+import {
+  addTodo,
+  hydrateTodos,
+  removeTodo,
+  toggleTodo,
+} from "@/lib/features/todos/todo-slice";
 
 export default function Home() {
-  const [todos, setTodos] = useState<Todo[]>([]);
+  const todos = useSelector((state: RootState) => state.todos);
+  const dispatch = useDispatch();
+
   const [title, setTitle] = useState("");
   const [date, setDate] = useState<Date>();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Get todos from local storage on first run
     const savedTodos = localStorage.getItem("todos");
     if (savedTodos) {
-      setTodos(JSON.parse(savedTodos));
+      dispatch(hydrateTodos(JSON.parse(savedTodos)));
     }
 
     setLoading(false);
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     localStorage.setItem("todos", JSON.stringify(todos));
   }, [todos]);
-
-  function generateRandomId() {
-    return Math.random().toString(36).substring(7);
-  }
 
   function handleAddTodo() {
     if (title.trim() === "") {
@@ -43,17 +47,10 @@ export default function Home() {
       return;
     }
 
-    const newTodo: Todo = {
-      id: generateRandomId(),
-      title: title,
-      date: date,
-      isCompleted: false,
-    };
-
-    console.log(newTodo);
+    const dateString = date.toISOString();
 
     // Add new todo to the list
-    setTodos([...todos, newTodo]);
+    dispatch(addTodo({ title, date: dateString }));
 
     // Clear the input field and date picker
     setTitle("");
@@ -64,22 +61,11 @@ export default function Home() {
   }
 
   function handleToggleTodo(id: string) {
-    const updatedTodos = todos.map((todo) => {
-      if (todo.id === id) {
-        return {
-          ...todo,
-          isCompleted: !todo.isCompleted,
-        };
-      }
-      return todo;
-    });
-
-    setTodos(updatedTodos);
+    dispatch(toggleTodo(id));
   }
 
   function handleDeleteTodo(id: string) {
-    const updatedTodos = todos.filter((todo) => todo.id !== id);
-    setTodos(updatedTodos);
+    dispatch(removeTodo(id));
 
     // show toast message
     toast.success("Todo deleted successfully.");

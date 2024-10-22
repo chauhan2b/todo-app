@@ -1,11 +1,11 @@
 import { Checkbox } from "@/components/ui/checkbox";
-import { Todo } from "../models/todo";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
+import { TodoState } from "./models/todo";
 
 interface TodoListProps {
-  todos: Todo[];
+  todos: TodoState[];
   toggleTodo: (id: string) => void;
   deleteTodo: (id: string) => void;
 }
@@ -35,7 +35,7 @@ export default function TodoList({
           </div>
           <div className="flex">
             <span className="hidden md:block px-10 py-2 text-sm text-gray-500">
-              {format(todo.date, "PPP")}
+              {format(new Date(todo.date), "PPP")}
             </span>
             <Button
               variant="ghost"
