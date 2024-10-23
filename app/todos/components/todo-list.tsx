@@ -1,4 +1,5 @@
-import { TodoState } from "../todos/models/todo";
+"use client";
+
 import {
   Accordion,
   AccordionContent,
@@ -7,83 +8,93 @@ import {
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { TodoItem } from "./todo-item";
+import { useEffect, useState } from "react";
+import { hydrateTodos } from "@/lib/features/todos/todo-slice";
+import { RootState } from "@/lib/store";
+import { useDispatch, useSelector } from "react-redux";
 
-interface TodoListProps {
-  todos: TodoState[];
-  toggleTodo: (id: string) => void;
-  deleteTodo: (id: string) => void;
-}
-
-export default function TodoList({
-  todos,
-  toggleTodo,
-  deleteTodo,
-}: TodoListProps) {
+export default function TodoList() {
+  const todos = useSelector((state: RootState) => state.todos);
   const pendingTodos = todos.filter((todo) => !todo.isCompleted);
   const completedTodos = todos.filter((todo) => todo.isCompleted);
 
+  const dispatch = useDispatch();
+
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const savedTodos = localStorage.getItem("todos");
+    if (savedTodos) {
+      dispatch(hydrateTodos(JSON.parse(savedTodos)));
+    }
+
+    setLoading(false);
+  }, [dispatch]);
+
+  useEffect(() => {
+    localStorage.setItem("todos", JSON.stringify(todos));
+  }, [todos]);
+
   return (
     <>
-      {/* If todos are empty */}
+      {/* If todos are loading */}
 
-      {todos.length === 0 && (
-        <div className="flex items-center justify-center mt-5 text-gray-500">
-          Start by adding a new todo.
-        </div>
-      )}
+      {loading ? (
+        <div className="flex justify-center items-center py-4">Loading...</div>
+      ) : (
+        <>
+          {/* If todos are empty */}
 
-      {/* Pending Todos */}
+          {todos.length === 0 && (
+            <div className="flex items-center justify-center mt-5 text-gray-500">
+              Start by adding a new todo.
+            </div>
+          )}
 
-      {pendingTodos.length === 0 || (
-        <Accordion type="single" collapsible className="px-6">
-          <AccordionItem value="item-1">
-            <AccordionTrigger className="text-sm text-gray-500">
-              <div className="flex items-center">
-                <Badge variant="outline" className="text-gray-500 mr-2">
-                  {pendingTodos.length}
-                </Badge>
-                Pending
-              </div>
-            </AccordionTrigger>
-            <AccordionContent>
-              {pendingTodos.map((todo) => (
-                <TodoItem
-                  todo={todo}
-                  key={todo.id}
-                  toggleTodo={toggleTodo}
-                  deleteTodo={deleteTodo}
-                />
-              ))}
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
-      )}
+          {/* Pending Todos */}
 
-      {/* Completed Todos */}
+          {pendingTodos.length === 0 || (
+            <Accordion type="single" collapsible className="px-6">
+              <AccordionItem value="item-1">
+                <AccordionTrigger className="text-sm text-gray-500">
+                  <div className="flex items-center">
+                    <Badge variant="outline" className="text-gray-500 mr-2">
+                      {pendingTodos.length}
+                    </Badge>
+                    Pending
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent>
+                  {pendingTodos.map((todo) => (
+                    <TodoItem todo={todo} key={todo.id} />
+                  ))}
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          )}
 
-      {completedTodos.length === 0 || (
-        <Accordion type="single" collapsible className="px-6">
-          <AccordionItem value="item-1">
-            <AccordionTrigger className="text-sm text-gray-500">
-              <div className="flex items-center">
-                <Badge variant="outline" className="text-gray-500 mr-2">
-                  {completedTodos.length}
-                </Badge>
-                Finished
-              </div>
-            </AccordionTrigger>
-            <AccordionContent>
-              {completedTodos.map((todo) => (
-                <TodoItem
-                  todo={todo}
-                  key={todo.id}
-                  toggleTodo={toggleTodo}
-                  deleteTodo={deleteTodo}
-                />
-              ))}
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
+          {/* Completed Todos */}
+
+          {completedTodos.length === 0 || (
+            <Accordion type="single" collapsible className="px-6">
+              <AccordionItem value="item-1">
+                <AccordionTrigger className="text-sm text-gray-500">
+                  <div className="flex items-center">
+                    <Badge variant="outline" className="text-gray-500 mr-2">
+                      {completedTodos.length}
+                    </Badge>
+                    Finished
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent>
+                  {completedTodos.map((todo) => (
+                    <TodoItem todo={todo} key={todo.id} />
+                  ))}
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          )}
+        </>
       )}
     </>
   );
