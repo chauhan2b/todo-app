@@ -1,4 +1,4 @@
-import { TodoState } from "../models/todo";
+import { TodoState } from "../todos/models/todo";
 import {
   Accordion,
   AccordionContent,

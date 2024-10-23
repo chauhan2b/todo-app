@@ -1,5 +1,5 @@
 import { Checkbox } from "@/components/ui/checkbox";
-import { TodoState } from "../models/todo";
+import { TodoState } from "../todos/models/todo";
 import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
