@@ -34,10 +34,16 @@ export const todoSlice = createSlice({
         state.splice(state.indexOf(todo), 1);
       }
     },
+    editTodo: (state, action: PayloadAction<{ id: string; title: string }>) => {
+      const todo = state.find((todo) => todo.id === action.payload.id);
+      if (todo) {
+        todo.title = action.payload.title;
+      }
+    },
   },
 });
 
-export const { hydrateTodos, addTodo, removeTodo, toggleTodo } =
+export const { hydrateTodos, addTodo, removeTodo, toggleTodo, editTodo } =
   todoSlice.actions;
 
 export default todoSlice.reducer;
