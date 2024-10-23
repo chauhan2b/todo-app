@@ -71,6 +71,7 @@ export function TodoItem({ todo }: TodoItemProps) {
         <Button
           variant="ghost"
           size="sm"
+          disabled={title.trim() === ""}
           onClick={() => handleEditTodo(todo.id)}
           className="mr-2 text-gray-500 hover:text-gray-800"
         >
